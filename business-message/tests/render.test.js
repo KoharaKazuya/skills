@@ -52,6 +52,33 @@ function output(doc = DOC, options = {}) {
   });
 }
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10" fill="red"/></svg>';
+test('final HTML can be shared alone without source files or external resources', () => temp(root => {
+  const source = path.join(root, 'source');
+  fs.mkdirSync(path.join(source, 'assets'), { recursive: true });
+  fs.writeFileSync(path.join(source, 'assets/example-chart.svg'), svg);
+  fs.writeFileSync(path.join(source, 'image.svg'), svg);
+  const src = path.join(source, 'message.md');
+  fs.writeFileSync(src, DOC.replace('公開本文。', '公開本文。 ![添付図](image.svg) [出典](https://example.com/reference)'));
+  const shared = path.join(root, 'shared.html');
+  fs.copyFileSync(render(src, { final: true }), shared);
+  fs.rmSync(source, { recursive: true });
+  const html = fs.readFileSync(shared, 'utf8');
+  assert.ok(html.startsWith('<!doctype html>'));
+  assert.ok(html.includes('<style>'));
+  assert.ok(html.includes('http-equiv="Content-Security-Policy"'));
+  assert.ok(html.includes("default-src &#x27;none&#x27;; img-src data:; style-src &#x27;unsafe-inline&#x27;"));
+  assert.ok(html.includes('<details><summary>詳しい背景・根拠</summary>'));
+  assert.ok(html.includes('公開本文。'));
+  assert.ok(html.includes('公開背景。'));
+  assert.ok(html.includes('href="https://example.com/reference"'));
+  const images = [...html.matchAll(/<img\b[^>]*src="([^"]+)"/g)];
+  assert.equal(images.length, 2);
+  for (const [, address] of images) {
+    assert.ok(address.startsWith('data:image/svg+xml;base64,'));
+    assert.equal(Buffer.from(address.split(',')[1], 'base64').toString('utf8'), svg);
+  }
+  assert.doesNotMatch(html, /<script\b|<link\b|data-visual-id=|秘密のゴール|非公開の検討結果/);
+}));
 test('CLI stage/final renders bundled example from another working directory', () => temp(root => {
   fs.cpSync(path.join(skill, 'examples'), root, { recursive: true });
   const src = path.join(root, 'message.md');
