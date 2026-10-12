@@ -51,3 +51,11 @@ instruction: |
 5. スキルのディレクトリで `python -m unittest discover -s tests -v` を実行する。完成物で本文不変、非公開情報の不掲載、全マークの消失を確認する。Mermaidを含まない場合、生成済み原本と素材が同一なら再変換結果も同一。Mermaidの出力はCLI・ブラウザー・フォント環境に依存するため、同一バイト列になるとは断定しない。
 
 実行環境: Python 3.10+、`pip install -r requirements.txt`。Mermaidを使う場合はNode.js環境に `@mermaid-js/mermaid-cli` の `mmdc` コマンドが必要（例: `npm install -g @mermaid-js/mermaid-cli`）。CLIがない場合は成功扱いせずエラーにする。HTMLはCSSと画像を埋め込む一つのファイルにする。
+
+## 開発・保守時だけ読む文書
+
+通常のメッセージ作成・推敲・HTML生成では、[背景と設計](references/design.md)を読まない。
+次の場合だけ、変更や調査を始める前に読む。
+
+- このスキルのルール、Markdown形式、変換プログラムを変更する。
+- 不具合を調査しており、このファイル・コード・テストだけでは期待する動作がわからない。
