@@ -44,13 +44,15 @@ instruction: |
 
 ## HTMLへの2段階変換
 
-1. `python scripts/render.py path/to/message.md --stage`。文章・表を機械変換し、MermaidはCLIでSVGへ変換する。`visual` はHTMLの専用マークとして**残す**。
+1. `node scripts/render.js path/to/message.md --stage`。文章・表を機械変換し、MermaidはCLIでSVGへ変換する。`visual` はHTMLの専用マークとして**残す**。
 2. HTMLに残った `data-visual-id` ごとに、承認済み指示に従いLLM（あるいは画像生成手段）で**その図表素材だけ**作る。HTML全体をLLMに渡して書き直させない。素材はMarkdownと同じディレクトリの `assets/<id>.svg` / `.png` / `.jpg` / `.webp` に保存。生成画像の説明もMarkdownで確定済みの内容だけにする。
 3. 静的なSVG以外（script、イベント属性、foreignObject、外部URL等）は使用しない。生成した図の数値・文字・関係が原本と一致するか点検し、必要なら再生成する。
-4. `python scripts/render.py path/to/message.md --final`。専用マークを素材に**機械的に置換**して単一のHTMLへ埋め込む。素材がない、無効、安全に埋め込めない場合は失敗とし、完成とは報告しない。
-5. スキルのディレクトリで `python -m unittest discover -s tests -v` を実行する。完成物で本文不変、非公開情報の不掲載、全マークの消失を確認する。Mermaidを含まない場合、生成済み原本と素材が同一なら再変換結果も同一。Mermaidの出力はCLI・ブラウザー・フォント環境に依存するため、同一バイト列になるとは断定しない。
+4. `node scripts/render.js path/to/message.md --final`。専用マークを素材に**機械的に置換**して単一のHTMLへ埋め込む。素材がない、無効、安全に埋め込めない場合は失敗とし、完成とは報告しない。
+5. スキルのディレクトリで `npm test` を実行する。完成物で本文不変、非公開情報の不掲載、全マークの消失を確認する。Mermaidを含まない場合、生成済み原本と素材が同一なら再変換結果も同一。Mermaidの出力はCLI・ブラウザー・フォント環境に依存するため、同一バイト列になるとは断定しない。
 
-実行環境: Python 3.10+、`pip install -r requirements.txt`。Mermaidを使う場合はNode.js環境に `@mermaid-js/mermaid-cli` の `mmdc` コマンドが必要（例: `npm install -g @mermaid-js/mermaid-cli`）。CLIがない場合は成功扱いせずエラーにする。HTMLはCSSと画像を埋め込む一つのファイルにする。
+実行環境: Node.jsのサポート中のLTSを対象とする。2026-10-12時点ではActive LTSの24とMaintenance LTSの22に対応する。Pythonは不要。Linux・macOS・Windowsで同じNode.jsコマンドを使う。スキルのディレクトリで `npm ci` を実行してから変換する。依存関係は `package.json` と `package-lock.json` で管理し、テストはNode.js標準のテストランナーを使う。LTSの切り替わり時には `engines` とCIの対象を更新し、新しいバージョンのテストが通ってから対応を宣言する。
+
+Mermaidを使う場合だけ、スキルのディレクトリで `npm install --no-save --package-lock=false @mermaid-js/mermaid-cli` を追加実行する。ローカルのCLIをNode.jsから直接起動するため、Windowsでもシェルのコマンド解釈に依存しない。Linux・macOSではPATH上の `mmdc` も利用できる。CLIに必要なブラウザー・OS依存ライブラリ・日本語フォントは各環境で用意し、実際の原本の変換で確認する。CLIがない、起動に失敗した、素材が生成されなかった場合は成功扱いせずエラーにする。通常の `npm test` はCLI連携を模擬して検証し、実ブラウザーでの生成成功は意味しない。HTMLはCSSと画像を埋め込む一つのファイルにする。
 
 ## 開発・保守時だけ読む文書
 
