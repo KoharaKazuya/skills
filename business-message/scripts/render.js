@@ -12,6 +12,8 @@ const TYPES = new Set(['主張', '提案', '相談', '質問', '依頼', '報告
 const SECTIONS = ['メッセージ', '背景情報', '作成者向け情報'];
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;' })[c]);
 const yaml = source => parseYaml(source, { maxAliasCount: 50, uniqueKeys: true });
+// Keep the shared document self-contained, including when opened via file://.
+const CONTENT_POLICY = "default-src 'none'; img-src data:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'";
 const STYLES = "body{font-family:system-ui,-apple-system,\"Noto Sans JP\",sans-serif;line-height:1.75;color:#20242b;max-width:840px;margin:0 auto;padding:clamp(18px,5vw,48px);background:#fff}h1{line-height:1.35}h2{margin-top:1.7em}header{margin-bottom:2rem}.kind{color:#586575;font-size:.85rem}main{font-size:1rem}details{margin-top:2rem;border-top:1px solid #d4d9dd;padding-top:1rem}summary{cursor:pointer;font-weight:600}table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}th,td{border:1px solid #d4d9dd;padding:.5rem .75rem;text-align:left}pre{overflow-x:auto}img,svg{max-width:100%;height:auto}.diagram{margin:1.5rem 0;overflow-x:auto}.pending{padding:1rem;border:2px dashed #a3a3a3}a{overflow-wrap:anywhere}";
 
 export function parseDocument(source) {
@@ -145,7 +147,7 @@ export function render(source, { final = false, ...options } = {}) {
   const message = renderMarkdown(sections.get(SECTIONS[0]), path.dirname(src), final, ids, options);
   const background = renderMarkdown(sections.get(SECTIONS[1]), path.dirname(src), final, ids, options);
   const title = escape(meta.title), kind = escape(meta.type);
-  const doc = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${STYLES}</style></head><body><header><div class="kind">${kind}</div><h1>${title}</h1></header><main>${message}</main>${background.trim() ? '<details><summary>詳しい背景・根拠</summary>' + background + '</details>' : ''}</body></html>`;
+  const doc = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${escape(CONTENT_POLICY)}"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${STYLES}</style></head><body><header><div class="kind">${kind}</div><h1>${title}</h1></header><main>${message}</main>${background.trim() ? '<details><summary>詳しい背景・根拠</summary>' + background + '</details>' : ''}</body></html>`;
   if (final && doc.includes('data-visual-id=')) throw new Error('Unresolved visual marks');
   const parsed = path.parse(src), output = path.join(parsed.dir, parsed.name + '.html');
   if (output === src) throw new Error('Source must not have an .html extension');

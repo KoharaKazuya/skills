@@ -44,6 +44,8 @@ instruction: |
 
 ## HTMLへの2段階変換
 
+完成するHTMLは**スタンドアローンHTML**とする。共有するのは `.html` 1ファイルだけで、原本Markdown・`assets`・Node.js・Webサーバーを受け手に渡す必要はない。ダウンロードしたファイルをブラウザーで直接開き、オフラインでも本文・表・画像・Mermaidの図を表示し、背景情報を開閉できるようにする。CSSとすべての画像を埋め込み、外部CSS・JavaScript・Webフォント・CDN・実行時の通信に依存しない。フォントは受け手の端末で利用できるものを使う。出典など通常のリンクは残せるが、リンク先の閲覧には通信が必要な場合がある。生成HTMLには外部リソースの読み込みを制限するContent Security Policyを設定する。`--stage` のHTMLは図表生成待ちの中間成果物であり、共有用の完成物は `--final` で生成する。
+
 1. `node scripts/render.js path/to/message.md --stage`。文章・表を機械変換し、MermaidはCLIでSVGへ変換する。`visual` はHTMLの専用マークとして**残す**。
 2. HTMLに残った `data-visual-id` ごとに、承認済み指示に従いLLM（あるいは画像生成手段）で**その図表素材だけ**作る。HTML全体をLLMに渡して書き直させない。素材はMarkdownと同じディレクトリの `assets/<id>.svg` / `.png` / `.jpg` / `.webp` に保存。生成画像の説明もMarkdownで確定済みの内容だけにする。
 3. 静的なSVG以外（script、イベント属性、foreignObject、外部URL等）は使用しない。生成した図の数値・文字・関係が原本と一致するか点検し、必要なら再生成する。
