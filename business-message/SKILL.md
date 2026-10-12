@@ -50,9 +50,9 @@ instruction: |
 4. `node scripts/render.js path/to/message.md --final`。専用マークを素材に**機械的に置換**して単一のHTMLへ埋め込む。素材がない、無効、安全に埋め込めない場合は失敗とし、完成とは報告しない。
 5. スキルのディレクトリで `npm test` を実行する。完成物で本文不変、非公開情報の不掲載、全マークの消失を確認する。Mermaidを含まない場合、生成済み原本と素材が同一なら再変換結果も同一。Mermaidの出力はCLI・ブラウザー・フォント環境に依存するため、同一バイト列になるとは断定しない。
 
-実行環境: Node.jsのサポート中のLTSを対象とする。2026-10-12時点ではActive LTSの24とMaintenance LTSの22に対応する。Pythonは不要。Linux・macOS・Windowsで同じNode.jsコマンドを使う。スキルのディレクトリで `npm ci` を実行してから変換する。依存関係は `package.json` と `package-lock.json` で管理し、テストはNode.js標準のテストランナーを使う。LTSの切り替わり時には `engines` とCIの対象を更新し、新しいバージョンのテストが通ってから対応を宣言する。
+実行環境: Node.jsのサポート中のLTSを対象とする。2026-10-12時点ではActive LTSの24とMaintenance LTSの22に対応する。Pythonは不要。対応OSはLinux・macOSで、同じNode.jsコマンドを使う。スキルのディレクトリで `npm ci` を実行してから変換する。依存関係は `package.json` と `package-lock.json` で管理し、テストはNode.js標準のテストランナーを使う。LTSの切り替わり時には `engines` とCIの対象を更新し、新しいバージョンのテストが通ってから対応を宣言する。
 
-Mermaidを使う場合だけ、スキルのディレクトリで `npm install --no-save --package-lock=false @mermaid-js/mermaid-cli` を追加実行する。ローカルのCLIをNode.jsから直接起動するため、Windowsでもシェルのコマンド解釈に依存しない。Linux・macOSではPATH上の `mmdc` も利用できる。CLIに必要なブラウザー・OS依存ライブラリ・日本語フォントは各環境で用意し、実際の原本の変換で確認する。CLIがない、起動に失敗した、素材が生成されなかった場合は成功扱いせずエラーにする。通常の `npm test` はCLI連携を模擬して検証し、実ブラウザーでの生成成功は意味しない。HTMLはCSSと画像を埋め込む一つのファイルにする。
+Mermaidを使う場合だけ、スキルのディレクトリで `npm install --no-save --package-lock=false @mermaid-js/mermaid-cli` を追加実行する。ローカルのCLIをNode.jsから直接起動する。Linux・macOSではPATH上の `mmdc` も利用できる。CLIに必要なブラウザー・OS依存ライブラリ・日本語フォントは各環境で用意し、実際の原本の変換で確認する。CLIがない、起動に失敗した、素材が生成されなかった場合は成功扱いせずエラーにする。通常の `npm test` はCLI連携を模擬して検証し、実ブラウザーでの生成成功は意味しない。HTMLはCSSと画像を埋め込む一つのファイルにする。
 
 ## 開発・保守時だけ読む文書
 

@@ -93,10 +93,10 @@ Markdown画像を埋め込まない不具合を修正し、再発を確認する
 
 ### Node.jsへの移行（2026-10-12）
 
-利用者の依頼によりPython実装・依存関係・テストをNode.jsに置き換えた。対象は公式リリース予定でサポート中のLTSである22（Maintenance）と24（Active）。最新のCurrentだけに依存せず、Node.js標準APIとES Modulesを使う。ネイティブアドオンやUnix専用シェルの必要がない依存関係を選び、Linux・macOS・WindowsのCIマトリクスを設ける。将来のLTSは検証後に対象へ追加する。
+利用者の依頼によりPython実装・依存関係・テストをNode.jsに置き換えた。対象は公式リリース予定でサポート中のLTSである22（Maintenance）と24（Active）。最新のCurrentだけに依存せず、Node.js標準APIとES Modulesを使う。ネイティブアドオンやUnix専用シェルの必要がない依存関係を選び、Linux・macOSのCIマトリクスを設ける。将来のLTSは検証後に対象へ追加する。
 
 既存のMarkdown形式、公開・非公開の分離、2段階変換、単一HTML、SVG許可リストを維持する。画像パスは実パスで原本ディレクトリ内に限定し、シンボリックリンクによる逸脱も拒否する。CRLF、空白・日本語を含むパス、CLIの失敗、XMLの不正な構造も回帰テストに含める。MermaidのローカルnpmパッケージはJavaScriptのCLI入口をNode.jsで直接実行する。ブラウザー実行の環境依存は残るため、標準テストの模擬CLI成功と実ブラウザーでの成功を区別する。
 
-この移行ではLinux上のNode.js 22.23.3と24.19.0で19件のテストがすべて成功した。macOS・WindowsはCIを追加したが、この環境での実行結果は未確認。実際のMermaidブラウザー生成も未検証。
+この移行ではLinux上のNode.js 22.23.3と24.19.0で19件のテストがすべて成功した。PR #2のCIでもLinux・macOSのNode.js 22・24の全ジョブが成功した。実際のMermaidブラウザー生成も未検証。
 
 公式リリース予定: https://github.com/nodejs/Release/blob/main/schedule.json
